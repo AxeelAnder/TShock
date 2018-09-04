@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Terraria;
+using Terraria.ModLoader.IO;
 
 namespace TShockAPI
 {
@@ -97,6 +98,8 @@ namespace TShockAPI
 		private byte _prefixId;
 		[JsonProperty("stack")]
 		private int _stack;
+		[JsonProperty("item")]
+		private Item _item;
 
 		/// <summary>
 		/// Gets the net ID.
@@ -123,6 +126,14 @@ namespace TShockAPI
 		}
 
 		/// <summary>
+		/// Gets the item.
+		/// </summary>
+		public Item Item
+		{
+			get { return _item; }
+		}
+
+		/// <summary>
 		/// Creates a new <see cref="NetItem"/>.
 		/// </summary>
 		/// <param name="netId">The net ID.</param>
@@ -133,6 +144,21 @@ namespace TShockAPI
 			_netId = netId;
 			_stack = stack;
 			_prefixId = prefixId;
+			_item = null;
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="NetItem"/>.
+		/// </summary>
+		/// <param name="netId">The net ID.</param>
+		/// <param name="stack">The stack.</param>
+		/// <param name="prefixId">The prefix ID.</param>
+		public NetItem(int netId, int stack, byte prefixId, Item item)
+		{
+			_netId = netId;
+			_stack = stack;
+			_prefixId = prefixId;
+			_item = item;
 		}
 
 		/// <summary>
@@ -141,7 +167,12 @@ namespace TShockAPI
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return String.Format("{0},{1},{2}", _netId, _stack, _prefixId);
+			if (_item == null)
+				return String.Format("{0},{1},{2}", _netId, _stack, _prefixId);
+			else
+				return String.Format("{0},{1},{2}",
+					ItemIO.ToBase64(_item),
+					_stack, _prefixId);
 		}
 
 		/// <summary>
@@ -160,11 +191,31 @@ namespace TShockAPI
 			if (comp.Length != 3)
 				throw new FormatException("String does not contain three sections.");
 
-			int netId = Int32.Parse(comp[0]);
+			// int netId = Int32.Parse(comp[0]);
 			int stack = Int32.Parse(comp[1]);
 			byte prefixId = Byte.Parse(comp[2]);
 
+			if (!Int32.TryParse(comp[0], out int netId))
+			{
+				var item = ParseModItem(comp[0]);
+				return new NetItem(item.netID, stack, prefixId, item);
+			}
+
 			return new NetItem(netId, stack, prefixId);
+		}
+
+		public static Item ParseModItem(string str)
+		{
+			try
+			{
+				return ItemIO.FromBase64(str);
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine($"Error when load item: {str}");
+			}
+
+			return null;
 		}
 
 		/// <summary>
@@ -174,9 +225,18 @@ namespace TShockAPI
 		/// <returns></returns>
 		public static explicit operator NetItem(Item item)
 		{
-			return item == null
-				? new NetItem()
-				: new NetItem(item.netID, item.stack, item.prefix);
+			if(item == null)
+			{
+				return new NetItem();
+			}
+			else if(item.modItem == null)
+			{
+				return new NetItem(item.netID, item.stack, item.prefix);
+			}
+			else
+			{
+				return new NetItem(item.netID, item.stack, item.prefix, item);
+			}
 		}
 	}
 }

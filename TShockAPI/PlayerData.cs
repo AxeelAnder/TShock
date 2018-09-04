@@ -20,6 +20,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using TShockAPI;
 using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace TShockAPI
 {
@@ -47,6 +48,8 @@ namespace TShockAPI
 		public bool[] hideVisuals;
 		public int questsCompleted;
 
+		public ModPlayer[] modPlayers;
+
 		public PlayerData(TSPlayer player)
 		{
 			for (int i = 0; i < NetItem.MaxInventory; i++)
@@ -57,7 +60,10 @@ namespace TShockAPI
 			for (int i = 0; i < TShock.ServerSideCharacterConfig.StartingInventory.Count; i++)
 			{
 				var item = TShock.ServerSideCharacterConfig.StartingInventory[i];
-				StoreSlot(i, item.NetId, item.PrefixId, item.Stack);
+				if(item.Item == null)
+					StoreSlot(i, item.NetId, item.PrefixId, item.Stack);
+				else
+					StoreSlot(i, item.Item);
 			}
 		}
 
@@ -76,6 +82,23 @@ namespace TShockAPI
 			}
 
 			this.inventory[slot] = new NetItem(netID, stack, prefix);
+		}
+
+		/// <summary>
+		/// Stores an item at the specific storage slot
+		/// </summary>
+		/// <param name="slot"></param>
+		/// <param name="netID"></param>
+		/// <param name="prefix"></param>
+		/// <param name="stack"></param>
+		public void StoreSlot(int slot, Item item)
+		{
+			if (slot > (this.inventory.Length - 1)) //if the slot is out of range then dont save
+			{
+				return;
+			}
+
+			this.inventory[slot] = new NetItem(item.netID, item.stack, item.prefix, item);
 		}
 
 		/// <summary>
@@ -178,6 +201,8 @@ namespace TShockAPI
 					
 				}
 			}
+
+			this.modPlayers = player.TPlayer.modPlayers;
 		}
 
 		/// <summary>
@@ -231,6 +256,11 @@ namespace TShockAPI
 				if (i < NetItem.InventoryIndex.Item2)
 				{
 					//0-58
+					if(this.inventory[i].Item != null)
+					{
+						player.TPlayer.inventory[i] = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.inventory[i].netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.inventory[i].netID != 0)
@@ -243,6 +273,11 @@ namespace TShockAPI
 				{
 					//59-78
 					var index = i - NetItem.ArmorIndex.Item1;
+					if (this.inventory[i].Item != null)
+					{
+						player.TPlayer.armor[index] = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.armor[index].netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.armor[index].netID != 0)
@@ -255,6 +290,11 @@ namespace TShockAPI
 				{
 					//79-88
 					var index = i - NetItem.DyeIndex.Item1;
+					if (this.inventory[i].Item != null)
+					{
+						player.TPlayer.dye[index] = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.dye[index].netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.dye[index].netID != 0)
@@ -267,6 +307,11 @@ namespace TShockAPI
 				{
 					//89-93
 					var index = i - NetItem.MiscEquipIndex.Item1;
+					if (this.inventory[i].Item != null)
+					{
+						player.TPlayer.miscEquips[index] = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.miscEquips[index].netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.miscEquips[index].netID != 0)
@@ -279,6 +324,11 @@ namespace TShockAPI
 				{
 					//93-98
 					var index = i - NetItem.MiscDyeIndex.Item1;
+					if (this.inventory[i].Item != null)
+					{
+						player.TPlayer.miscDyes[index] = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.miscDyes[index].netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.miscDyes[index].netID != 0)
@@ -291,6 +341,11 @@ namespace TShockAPI
 				{
 					//98-138
 					var index = i - NetItem.PiggyIndex.Item1;
+					if (this.inventory[i].Item != null)
+					{
+						player.TPlayer.bank.item[index] = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.bank.item[index].netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.bank.item[index].netID != 0)
@@ -303,6 +358,11 @@ namespace TShockAPI
 				{
 					//138-178
 					var index = i - NetItem.SafeIndex.Item1;
+					if (this.inventory[i].Item != null)
+					{
+						player.TPlayer.bank2.item[index] = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.bank2.item[index].netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.bank2.item[index].netID != 0)
@@ -315,6 +375,11 @@ namespace TShockAPI
 				{
 					//179-219
 					var index = i - NetItem.TrashIndex.Item1;
+					if (this.inventory[i].Item != null)
+					{
+						player.TPlayer.trashItem = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.trashItem.netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.trashItem.netID != 0)
@@ -327,6 +392,11 @@ namespace TShockAPI
 				{
 					//220
 					var index = i - NetItem.ForgeIndex.Item1;
+					if (this.inventory[i].Item != null)
+					{
+						player.TPlayer.bank3.item[index] = this.inventory[i].Item;
+						continue;
+					}
 					player.TPlayer.bank3.item[index].netDefaults(this.inventory[i].NetId);
 
 					if (player.TPlayer.bank3.item[index].netID != 0)
@@ -337,6 +407,9 @@ namespace TShockAPI
 					
 				}
 			}
+
+			if (this.modPlayers != null)
+				player.TPlayer.modPlayers = this.modPlayers;
 
 			float slot = 0f;
 			for (int k = 0; k < NetItem.InventorySlots; k++)

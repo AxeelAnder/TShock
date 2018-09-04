@@ -27,6 +27,8 @@ using System.Text.RegularExpressions;
 using Terraria;
 using Terraria.ID;
 using Terraria.Utilities;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using TShockAPI.DB;
 using Microsoft.Xna.Framework;
 using Terraria.Localization;
@@ -1158,6 +1160,48 @@ namespace TShockAPI
 					!string.IsNullOrWhiteSpace(TShock.Config.ServerName) ? TShock.Config.ServerName + " - " : "",
 					empty ? 0 : GetActivePlayerCount(),
 					TShock.Config.MaxSlots, Main.worldName, Netplay.ServerIP.ToString(), Netplay.ListenPort, TShock.VersionNum);
+		}
+
+		/// <summary>
+		/// Convert ModPlayer into Base64 coded string
+		/// </summary>
+		/// <param name="player"></param>
+		/// <returns></returns>
+		public static string ModPlayerToBase64(Player player)
+		{
+			MemoryStream memoryStream = new MemoryStream();
+			var tagCompound = new TagCompound();
+			tagCompound["modData"] = PlayerIO.SaveModData(player);
+			TagIO.ToStream(tagCompound, memoryStream, true);
+
+			return Convert.ToBase64String(memoryStream.ToArray());
+		}
+
+		public static ModPlayer[] Base64ToModPlayer(string str)
+		{
+			if (string.IsNullOrEmpty(str))
+				return null;
+
+			var player = new Player();
+
+			MemoryStream stream = new MemoryStream(Convert.FromBase64String(str));
+			var dataList = TagIO.FromStream(stream, true).GetList<TagCompound>("modData");
+			PlayerIO.LoadModData(player, dataList);
+
+			var modPlayers = (ModPlayer[])player.modPlayers.Clone();
+			return modPlayers;
+		}
+
+		public static ModPlayer[] LoadModPlayerFromBase64(string str, Player player)
+		{
+			if (string.IsNullOrEmpty(str))
+				return null;
+
+			MemoryStream stream = new MemoryStream(Convert.FromBase64String(str));
+			var dataList = TagIO.FromStream(stream, true).GetList<TagCompound>("modData");
+			PlayerIO.LoadModData(player, dataList);
+
+			return player.modPlayers;
 		}
 
 		/// <summary>Determines the distance between two vectors.</summary>
