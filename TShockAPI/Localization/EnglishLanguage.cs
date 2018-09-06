@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace TShockAPI.Localization
 {
@@ -48,21 +49,26 @@ namespace TShockAPI.Localization
 					LanguageManager.Instance.SetLanguage(GameCulture.English);
 				}
 
-				for (var i = -48; i < Main.maxItemTypes; i++)
+				for (var i = -48; i < ItemLoader.ItemCount; i++)
 				{
 					ItemNames.Add(i, Lang.GetItemNameValue(i));
 				}
 
-				for (var i = -17; i < Main.maxNPCTypes; i++)
+				for (var i = -17; i < NPCLoader.NPCCount; i++)
 				{
 					NpcNames.Add(i, Lang.GetNPCNameValue(i));
 				}
 
-				foreach (var field in typeof(Main).Assembly.GetType("Terraria.ID.PrefixID")
-							.GetFields().Where(f => !f.Name.Equals("Count", StringComparison.Ordinal)))
+				for (var i = -17; i < ModPrefix.PrefixCount; i++)
 				{
-					Prefixs.Add((int) field.GetValue(null), field.Name);
+					Prefixs.Add(i, Lang.prefix[i].Value);
 				}
+
+				//foreach (var field in typeof(Main).Assembly.GetType("Terraria.ID.PrefixID")
+				//			.GetFields().Where(f => !f.Name.Equals("Count", StringComparison.Ordinal)))
+				//{
+				//	Prefixs.Add((int) field.GetValue(null), field.Name);
+				//}
 			}
 			finally
 			{

@@ -22,6 +22,7 @@ using Terraria.ID;
 using TShockAPI.DB;
 using TShockAPI.Net;
 using Terraria;
+using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using OTAPI.Tile;
 using TShockAPI.Localization;
@@ -376,7 +377,7 @@ namespace TShockAPI
 			short type = args.Type;
 
 			// player is attempting to crash clients
-			if (type < -48 || type >= Main.maxItemTypes)
+			if (type < -48 || type >= ItemLoader.ItemCount)
 			{
 				// Causes item duplications. Will be re added later if necessary
 				//args.Player.SendData(PacketTypes.ItemDrop, "", id);
@@ -387,7 +388,7 @@ namespace TShockAPI
 			// make sure the prefix is a legit value
 			// Note: Not checking if prefix is less than 1 because if it is, this check
 			// will break item pickups on the client.
-			if (prefix > PrefixID.Count) 
+			if (prefix > ModPrefix.PrefixCount) 
 			{
 				args.Player.SendData(PacketTypes.ItemDrop, "", id);
 				args.Handled = true;
