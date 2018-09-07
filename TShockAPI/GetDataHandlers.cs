@@ -29,6 +29,7 @@ using Terraria.ID;
 using TShockAPI.DB;
 using TShockAPI.Net;
 using Terraria;
+using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.DataStructures;
 using Terraria.GameContent.Tile_Entities;
@@ -1427,7 +1428,7 @@ namespace TShockAPI
 		{
 			#region Blacklists
 
-			WhitelistBuffMaxTime = new int[Main.maxBuffTypes];
+			WhitelistBuffMaxTime = new int[BuffLoader.BuffCount];
 			WhitelistBuffMaxTime[20] = 600;
 			WhitelistBuffMaxTime[0x18] = 1200;
 			WhitelistBuffMaxTime[0x1f] = 120;

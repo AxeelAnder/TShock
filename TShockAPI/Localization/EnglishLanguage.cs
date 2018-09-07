@@ -59,7 +59,7 @@ namespace TShockAPI.Localization
 					NpcNames.Add(i, Lang.GetNPCNameValue(i));
 				}
 
-				for (var i = -17; i < ModPrefix.PrefixCount; i++)
+				for (var i = 0; i < ModPrefix.PrefixCount; i++)
 				{
 					Prefixs.Add(i, Lang.prefix[i].Value);
 				}

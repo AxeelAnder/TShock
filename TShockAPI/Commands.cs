@@ -28,6 +28,7 @@ using System.Threading;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 using TShockAPI.DB;
 using TerrariaApi.Server;
 using TShockAPI.Hooks;
@@ -36,6 +37,7 @@ using Microsoft.Xna.Framework;
 using OTAPI.Tile;
 using TShockAPI.Localization;
 using System.Text.RegularExpressions;
+using PlayerHooks = TShockAPI.Hooks.PlayerHooks;
 
 namespace TShockAPI
 {
@@ -2333,7 +2335,7 @@ namespace TShockAPI
 			else
 			{
 				var npc = npcs[0];
-				if (npc.type >= 1 && npc.type < Main.maxNPCTypes && npc.type != 113)
+				if (npc.type >= 1 && npc.type < NPCLoader.NPCCount && npc.type != 113)
 				{
 					TSPlayer.Server.SpawnNPC(npc.netID, npc.FullName, amount, args.Player.TileX, args.Player.TileY, 50, 20);
 					if (args.Silent)
@@ -3457,7 +3459,7 @@ namespace TShockAPI
 							return;
 						}
 						short id;
-						if (Int16.TryParse(args.Parameters[1], out id) && id > 0 && id < Main.maxProjectileTypes)
+						if (Int16.TryParse(args.Parameters[1], out id) && id > 0 && id < ProjectileLoader.ProjectileCount)
 						{
 							TShock.ProjectileBans.AddNewBan(id);
 							args.Player.SendSuccessMessage("Banned projectile {0}.", id);
@@ -3477,7 +3479,7 @@ namespace TShockAPI
 						}
 
 						short id;
-						if (Int16.TryParse(args.Parameters[1], out id) && id > 0 && id < Main.maxProjectileTypes)
+						if (Int16.TryParse(args.Parameters[1], out id) && id > 0 && id < ProjectileLoader.ProjectileCount)
 						{
 							if (!TShock.Groups.GroupExists(args.Parameters[2]))
 							{
@@ -3514,7 +3516,7 @@ namespace TShockAPI
 						}
 
 						short id;
-						if (Int16.TryParse(args.Parameters[1], out id) && id > 0 && id < Main.maxProjectileTypes)
+						if (Int16.TryParse(args.Parameters[1], out id) && id > 0 && id < ProjectileLoader.ProjectileCount)
 						{
 							TShock.ProjectileBans.RemoveBan(id);
 							args.Player.SendSuccessMessage("Unbanned projectile {0}.", id);
@@ -3535,7 +3537,7 @@ namespace TShockAPI
 						}
 
 						short id;
-						if (Int16.TryParse(args.Parameters[1], out id) && id > 0 && id < Main.maxProjectileTypes)
+						if (Int16.TryParse(args.Parameters[1], out id) && id > 0 && id < ProjectileLoader.ProjectileCount)
 						{
 							if (!TShock.Groups.GroupExists(args.Parameters[2]))
 							{
@@ -3626,7 +3628,7 @@ namespace TShockAPI
 							return;
 						}
 						short id;
-						if (Int16.TryParse(args.Parameters[1], out id) && id >= 0 && id < Main.maxTileSets)
+						if (Int16.TryParse(args.Parameters[1], out id) && id >= 0 && id < TileLoader.TileCount)
 						{
 							TShock.TileBans.AddNewBan(id);
 							args.Player.SendSuccessMessage("Banned tile {0}.", id);
@@ -3646,7 +3648,7 @@ namespace TShockAPI
 						}
 
 						short id;
-						if (Int16.TryParse(args.Parameters[1], out id) && id >= 0 && id < Main.maxTileSets)
+						if (Int16.TryParse(args.Parameters[1], out id) && id >= 0 && id < TileLoader.TileCount)
 						{
 							if (!TShock.Groups.GroupExists(args.Parameters[2]))
 							{
@@ -3683,7 +3685,7 @@ namespace TShockAPI
 						}
 
 						short id;
-						if (Int16.TryParse(args.Parameters[1], out id) && id >= 0 && id < Main.maxTileSets)
+						if (Int16.TryParse(args.Parameters[1], out id) && id >= 0 && id < TileLoader.TileCount)
 						{
 							TShock.TileBans.RemoveBan(id);
 							args.Player.SendSuccessMessage("Unbanned tile {0}.", id);
@@ -3704,7 +3706,7 @@ namespace TShockAPI
 						}
 
 						short id;
-						if (Int16.TryParse(args.Parameters[1], out id) && id >= 0 && id < Main.maxTileSets)
+						if (Int16.TryParse(args.Parameters[1], out id) && id >= 0 && id < TileLoader.TileCount)
 						{
 							if (!TShock.Groups.GroupExists(args.Parameters[2]))
 							{
@@ -5386,7 +5388,7 @@ namespace TShockAPI
 			{
 				item = matchedItems[0];
 			}
-			if (item.type < 1 && item.type >= Main.maxItemTypes)
+			if (item.type < 1 && item.type >= ItemLoader.ItemCount)
 			{
 				args.Player.SendErrorMessage("The item type {0} is invalid.", itemNameOrId);
 				return;
@@ -5549,7 +5551,7 @@ namespace TShockAPI
 						prefix = prefixIds[0];
 				}
 
-				if (item.type >= 1 && item.type < Main.maxItemTypes)
+				if (item.type >= 1 && item.type < ItemLoader.ItemCount)
 				{
 					var players = TSPlayer.FindByNameOrID(plStr);
 					if (players.Count == 0)
@@ -5661,7 +5663,7 @@ namespace TShockAPI
 			}
 			if (args.Parameters.Count == 2)
 				int.TryParse(args.Parameters[1], out time);
-			if (id > 0 && id < Main.maxBuffTypes)
+			if (id > 0 && id < BuffLoader.BuffCount)
 			{
 				if (time < 0 || time > short.MaxValue)
 					time = 60;
@@ -5712,7 +5714,7 @@ namespace TShockAPI
 				}
 				if (args.Parameters.Count == 3)
 					int.TryParse(args.Parameters[2], out time);
-				if (id > 0 && id < Main.maxBuffTypes)
+				if (id > 0 && id < BuffLoader.BuffCount)
 				{
 					if (time < 0 || time > short.MaxValue)
 						time = 60;

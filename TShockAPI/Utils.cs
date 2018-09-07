@@ -225,7 +225,7 @@ namespace TShockAPI
 			int type = -1;
 			if (Int32.TryParse(text, out type))
 			{
-				if (type >= Main.maxItemTypes)
+				if (type >= ItemLoader.ItemCount)
 					return new List<Item>();
 				return new List<Item> {GetItemById(type)};
 			}
@@ -259,7 +259,7 @@ namespace TShockAPI
 			string nameLower = name.ToLowerInvariant();
 			var checkEnglish = Language.ActiveCulture != GameCulture.English;
 
-			for (int i = 1; i < Main.maxItemTypes; i++)
+			for (int i = 1; i < ItemLoader.ItemCount; i++)
 			{
 				item.netDefaults(i);
 				if (!String.IsNullOrWhiteSpace(item.Name))
@@ -317,7 +317,7 @@ namespace TShockAPI
 			int type = -1;
 			if (int.TryParse(idOrName, out type))
 			{
-				if (type >= Main.maxNPCTypes)
+				if (type >= NPCLoader.NPCCount)
 					return new List<NPC>();
 				return new List<NPC> { GetNPCById(type) };
 			}
@@ -346,7 +346,7 @@ namespace TShockAPI
 			var found = new List<NPC>();
 			NPC npc = new NPC();
 			string nameLower = name.ToLowerInvariant();
-			for (int i = -17; i < Main.maxNPCTypes; i++)
+			for (int i = -17; i < NPCLoader.NPCCount; i++)
 			{
 				string englishName = EnglishLanguage.GetNpcNameById(i).ToLowerInvariant();
 
@@ -368,7 +368,7 @@ namespace TShockAPI
 		/// <returns>name</returns>
 		public string GetBuffName(int id)
 		{
-			return (id > 0 && id < Main.maxBuffTypes) ? Lang.GetBuffName(id) : null;
+			return (id > 0 && id < BuffLoader.BuffCount) ? Lang.GetBuffName(id) : null;
 		}
 
 		/// <summary>
@@ -378,7 +378,7 @@ namespace TShockAPI
 		/// <returns>description</returns>
 		public string GetBuffDescription(int id)
 		{
-			return (id > 0 && id < Main.maxBuffTypes) ? Lang.GetBuffDescription(id) : null;
+			return (id > 0 && id < BuffLoader.BuffCount) ? Lang.GetBuffDescription(id) : null;
 		}
 
 		/// <summary>
@@ -390,14 +390,14 @@ namespace TShockAPI
 		{
 			string nameLower = name.ToLower();
 			string buffname;
-			for (int i = 1; i < Main.maxBuffTypes; i++)
+			for (int i = 1; i < BuffLoader.BuffCount; i++)
 			{
 				buffname = Lang.GetBuffName(i);
 				if (!String.IsNullOrWhiteSpace(buffname) && buffname.ToLower() == nameLower)
 					return new List<int> {i};
 			}
 			var found = new List<int>();
-			for (int i = 1; i < Main.maxBuffTypes; i++)
+			for (int i = 1; i < BuffLoader.BuffCount; i++)
 			{
 				buffname = Lang.GetBuffName(i);
 				if (!String.IsNullOrWhiteSpace(buffname) && buffname.ToLower().StartsWith(nameLower))
@@ -839,7 +839,7 @@ namespace TShockAPI
 			DumpItems("Items-1_0.txt", 1, 235);
 			DumpItems("Items-1_1.txt", 235, 604);
 			DumpItems("Items-1_2.txt", 604, 2749);
-			DumpItems("Items-1_3.txt", 2749, Main.maxItemTypes);
+			DumpItems("Items-1_3.txt", 2749, ItemLoader.ItemCount);
 			DumpNPCs("NPCs.txt");
 			DumpProjectiles("Projectiles.txt");
 			DumpPrefixes("Prefixes.txt");
@@ -911,7 +911,7 @@ namespace TShockAPI
 			buffer.AppendLine("    \"h-2\": \"Description\",");
 
 			List<object[]> elements = new List<object[]>();
-			for (int i = 0; i < Main.maxBuffTypes; i++)
+			for (int i = 0; i < BuffLoader.BuffCount; i++)
 			{
 				if (!String.IsNullOrEmpty(Lang.GetBuffName(i)))
 				{
@@ -991,7 +991,7 @@ namespace TShockAPI
 			buffer.AppendLine("    \"h-2\": \"Type Name\",");
 
 			List<object[]> elements = new List<object[]>();
-			for (int i = -65; i < Main.maxNPCTypes; i++)
+			for (int i = -65; i < NPCLoader.NPCCount; i++)
 			{
 				NPC npc = new NPC();
 				npc.SetDefaults(i);
@@ -1027,7 +1027,7 @@ namespace TShockAPI
 			buffer.AppendLine("    \"h-1\": \"Name\",");
 
 			List<object[]> elements = new List<object[]>();
-			for (int i = 0; i < Main.maxProjectileTypes; i++)
+			for (int i = 0; i < ProjectileLoader.ProjectileCount; i++)
 			{
 				Projectile projectile = new Projectile();
 				projectile.SetDefaults(i);
@@ -1231,7 +1231,7 @@ namespace TShockAPI
 		internal void ComputeMaxStyles()
 		{
 			var item = new Item();
-			for (int i = 0; i < Main.maxItemTypes; i++)
+			for (int i = 0; i < ItemLoader.ItemCount; i++)
 			{
 				item.netDefaults(i);
 				if (item.placeStyle > 0)

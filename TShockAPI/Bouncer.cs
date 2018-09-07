@@ -1072,7 +1072,7 @@ namespace TShockAPI
 			byte alternate = args.Alternate;
 			bool direction = args.Direction;
 
-			if (type < 0 || type >= Main.maxTileSets)
+			if (type < 0 || type >= TileLoader.TileCount)
 			{
 				args.Handled = true;
 				return;
@@ -1320,7 +1320,7 @@ namespace TShockAPI
 						args.Handled = true;
 						return;
 					}
-					if (TShock.Itembans.ItemIsBanned(EnglishLanguage.GetItemNameById(selectedItem.netID), args.Player) || editData >= (action == EditAction.PlaceTile ? Main.maxTileSets : Main.maxWallTypes))
+					if (TShock.Itembans.ItemIsBanned(EnglishLanguage.GetItemNameById(selectedItem.netID), args.Player) || editData >= (action == EditAction.PlaceTile ? TileLoader.TileCount : WallLoader.WallCount))
 					{
 						args.Player.SendTileSquare(tileX, tileY, 4);
 						args.Handled = true;
