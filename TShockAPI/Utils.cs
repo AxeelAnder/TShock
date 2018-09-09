@@ -1204,6 +1204,25 @@ namespace TShockAPI
 			return player.modPlayers;
 		}
 
+		public static void SendModPlayer(TSPlayer player)
+		{
+			using (var memoryStream = new MemoryStream())
+			{
+				var tagCompound = new TagCompound();
+				tagCompound["modData"] = PlayerIO.SaveModData(player.TPlayer);
+				TagIO.ToStream(tagCompound, memoryStream, true);
+
+				var dataBuffer = memoryStream.ToArray();
+
+				var writer = new PacketWriter();
+				writer.SetType(PacketTypes.SyncModPlayer)
+					.PackInt32(dataBuffer.Length)
+					.PackBytes(dataBuffer);
+
+				player.SendRawData(writer.GetByteData());
+			}
+		}
+
 		/// <summary>Determines the distance between two vectors.</summary>
 		/// <param name="value1">The first vector location.</param>
 		/// <param name="value2">The second vector location.</param>

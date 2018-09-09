@@ -513,6 +513,8 @@ namespace TShockAPI
 				player.TPlayer.buffType[k] = 0;
 			}
 
+			Utils.SendModPlayer(player);
+
 			/*
 			 * The following packets are sent twice because the server will not send a packet to a client
 			 * if they have not spawned yet if the remoteclient is -1

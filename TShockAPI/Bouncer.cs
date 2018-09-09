@@ -625,16 +625,16 @@ namespace TShockAPI
 				return;
 			}
 
-			if (flag != 0 && flag != 4 // if no container or container2 placement
-				&& Main.tile[tileX, tileY].type != TileID.Containers
-				&& Main.tile[tileX, tileY].type != TileID.Dressers
-				&& Main.tile[tileX, tileY].type != TileID.Containers2
-				&& (!TShock.Utils.HasWorldReachedMaxChests() && Main.tile[tileX, tileY].type != TileID.Dirt)) //Chest
-			{
-				args.Player.SendTileSquare(tileX, tileY, 3);
-				args.Handled = true;
-				return;
-			}
+			//if (flag != 0 && flag != 4 // if no container or container2 placement
+			//	&& Main.tile[tileX, tileY].type != TileID.Containers
+			//	&& Main.tile[tileX, tileY].type != TileID.Dressers
+			//	&& Main.tile[tileX, tileY].type != TileID.Containers2
+			//	&& (!TShock.Utils.HasWorldReachedMaxChests() && Main.tile[tileX, tileY].type != TileID.Dirt)) //Chest
+			//{
+			//	args.Player.SendTileSquare(tileX, tileY, 3);
+			//	args.Handled = true;
+			//	return;
+			//}
 
 			if (flag == 2) //place dresser
 			{
