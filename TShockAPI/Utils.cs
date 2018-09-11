@@ -1206,20 +1206,57 @@ namespace TShockAPI
 
 		public static void SendModPlayer(TSPlayer player)
 		{
-			using (var memoryStream = new MemoryStream())
+			try
 			{
-				var tagCompound = new TagCompound();
-				tagCompound["modData"] = PlayerIO.SaveModData(player.TPlayer);
-				TagIO.ToStream(tagCompound, memoryStream, true);
+				using (var memoryStream = new MemoryStream())
+				{
+					var tagCompound = new TagCompound();
+					tagCompound["modData"] = PlayerIO.SaveModData(player.TPlayer);
+					TagIO.ToStream(tagCompound, memoryStream, true);
 
-				var dataBuffer = memoryStream.ToArray();
+					var dataBuffer = memoryStream.ToArray();
 
-				var writer = new PacketWriter();
-				writer.SetType(PacketTypes.SyncModPlayer)
-					.PackInt32(dataBuffer.Length)
-					.PackBytes(dataBuffer);
+					var writer = new PacketWriter();
+					writer.SetType(PacketTypes.SyncModPlayer)
+						.PackInt32(dataBuffer.Length)
+						.PackBytes(dataBuffer);
 
-				player.SendRawData(writer.GetByteData());
+					player.SendRawData(writer.GetByteData());
+				}
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine(ex);
+			}
+		}
+
+		public static void SendModItem(TSPlayer player, float slot, int remote)
+		{
+			if (TShock.Config.EnableModItemSync)
+			{
+				var moditem = player.PlayerData.inventory[(int)slot].Item;
+				if(moditem != null)
+				{
+					var data = Convert.FromBase64String(ItemIO.ToBase64(moditem));
+					var writer = new PacketWriter();
+					writer.SetType(PacketTypes.SyncModItem)
+						.PackInt32((int)slot)
+						.PackInt32(data.Length)
+						.PackBytes(data);
+
+					if(remote == -1)
+					{
+						TSPlayer.All.SendRawData(writer.GetByteData().ToArray());
+					}
+					else if(remote < 256)
+					{
+						TShock.Players[remote].SendRawData(writer.GetByteData().ToArray());
+					}
+				}
+			}
+			else
+			{
+				NetMessage.SendData(5, remote, -1, NetworkText.FromLiteral(Main.player[player.Index].inventory[(int)slot].Name), player.Index, slot, (float)Main.player[player.Index].inventory[(int)slot].prefix);
 			}
 		}
 

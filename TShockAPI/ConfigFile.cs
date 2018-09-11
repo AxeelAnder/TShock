@@ -520,6 +520,14 @@ namespace TShockAPI
 		[Description("Show backup autosave messages.")]
 		public bool ShowBackupAutosaveMessages = true;
 
+		/// <summary>EnableModPlayerSyn - Whether or not to sync ModPlayer.</summary>
+		[Description("Sync ModPlayer if SSC is enabled.")]
+		public bool EnableModPlayerSync = true;
+
+		/// <summary>EnableModItemSync - Whether or not to sync ModItem.</summary>
+		[Description("Sync ModItem if SSC is enabled.")]
+		public bool EnableModItemSync = true;
+
 		/// <summary>
 		/// Reads a configuration file from a given path
 		/// </summary>
