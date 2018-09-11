@@ -528,6 +528,10 @@ namespace TShockAPI
 		[Description("Sync ModItem if SSC is enabled.")]
 		public bool EnableModItemSync = true;
 
+		/// <summary>SkipPlayerSyncFor - Skip sync when SSC is enabled.</summary>
+		[Description("Skip sync when SSC is enabled.")]
+		public List<string> SkipPlayerSyncFor = new List<string>();
+
 		/// <summary>
 		/// Reads a configuration file from a given path
 		/// </summary>

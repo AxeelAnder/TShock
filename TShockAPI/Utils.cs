@@ -1171,7 +1171,7 @@ namespace TShockAPI
 		{
 			MemoryStream memoryStream = new MemoryStream();
 			var tagCompound = new TagCompound();
-			tagCompound["modData"] = PlayerIO.SaveModData(player);
+			tagCompound["modData"] = SavePlayerModData(player);
 			TagIO.ToStream(tagCompound, memoryStream, true);
 
 			return Convert.ToBase64String(memoryStream.ToArray());
@@ -1211,7 +1211,9 @@ namespace TShockAPI
 				using (var memoryStream = new MemoryStream())
 				{
 					var tagCompound = new TagCompound();
-					tagCompound["modData"] = PlayerIO.SaveModData(player.TPlayer);
+					
+					tagCompound["modData"] = SavePlayerModData(player.TPlayer);
+
 					TagIO.ToStream(tagCompound, memoryStream, true);
 
 					var dataBuffer = memoryStream.ToArray();
@@ -1230,33 +1232,55 @@ namespace TShockAPI
 			}
 		}
 
-		public static void SendModItem(TSPlayer player, float slot, int remote)
+		static List<TagCompound> SavePlayerModData(Player player)
 		{
-			if (TShock.Config.EnableModItemSync)
+			var list = new List<TagCompound>();
+			foreach (ModPlayer modPlayer in player.modPlayers)
 			{
-				var moditem = player.PlayerData.inventory[(int)slot].Item;
-				if(moditem != null)
+				if (TShock.Config.SkipPlayerSyncFor.Contains(modPlayer.mod.Name))
+					continue;
+				TagCompound modPlayerData = modPlayer.Save();
+				if (modPlayerData != null)
 				{
-					var data = Convert.FromBase64String(ItemIO.ToBase64(moditem));
-					var writer = new PacketWriter();
-					writer.SetType(PacketTypes.SyncModItem)
-						.PackInt32((int)slot)
-						.PackInt32(data.Length)
-						.PackBytes(data);
+					TagCompound modPlayerTag = new TagCompound();
+					modPlayerTag["mod"] = modPlayer.mod.Name;
+					modPlayerTag["name"] = modPlayer.Name;
+					modPlayerTag["data"] = modPlayerData;
+					list.Add(modPlayerTag);
+				}
+			}
+			return list;
+		}
 
-					if(remote == -1)
+		public static void SendModItem(TSPlayer player, Item modItem, int slot, int remote)
+		{
+			try
+			{
+				if (TShock.Config.EnableModItemSync)
+				{
+					if (modItem != null)
 					{
-						TSPlayer.All.SendRawData(writer.GetByteData().ToArray());
-					}
-					else if(remote < 256)
-					{
-						TShock.Players[remote].SendRawData(writer.GetByteData().ToArray());
+						var data = Convert.FromBase64String(ItemIO.ToBase64(modItem));
+						var writer = new PacketWriter();
+						writer.SetType(PacketTypes.SyncModItem)
+							.PackInt32((int)slot)
+							.PackInt32(data.Length)
+							.PackBytes(data);
+
+						if (remote == -1)
+						{
+							TSPlayer.All.SendRawData(writer.GetByteData().ToArray());
+						}
+						else if (remote < 256)
+						{
+							TShock.Players[remote].SendRawData(writer.GetByteData().ToArray());
+						}
 					}
 				}
 			}
-			else
+			catch(Exception ex)
 			{
-				NetMessage.SendData(5, remote, -1, NetworkText.FromLiteral(Main.player[player.Index].inventory[(int)slot].Name), player.Index, slot, (float)Main.player[player.Index].inventory[(int)slot].prefix);
+				Console.WriteLine(ex);
 			}
 		}
 
