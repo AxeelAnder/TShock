@@ -408,8 +408,6 @@ namespace TShockAPI
 				}
 			}
 
-			player.TPlayer.modPlayers = this.modPlayers;
-
 			float slot = 0f;
 			for (int k = 0; k < NetItem.InventorySlots; k++)
 			{
@@ -548,8 +546,18 @@ namespace TShockAPI
 				player.TPlayer.buffType[k] = 0;
 			}
 
-			if (TShock.Config.EnableModPlayerSync && this.modPlayers != null)
+			if (TShock.Config.EnableModPlayerSync)
+			{
+				if(this.modPlayers == null)
+				{
+					this.modPlayers = player.TPlayer.modPlayers;
+				}
+				else
+				{
+					player.TPlayer.modPlayers = this.modPlayers;
+				}
 				Utils.SendModPlayer(player);
+			}
 
 			/*
 			 * The following packets are sent twice because the server will not send a packet to a client
