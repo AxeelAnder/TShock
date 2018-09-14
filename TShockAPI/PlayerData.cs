@@ -61,7 +61,13 @@ namespace TShockAPI
 			{
 				var item = TShock.ServerSideCharacterConfig.StartingInventory[i];
 				if(item.Item == null)
-					StoreSlot(i, item.NetId, item.PrefixId, item.Stack);
+				{
+					var it = new Item();
+					it.netDefaults(item.NetId);
+					it.Prefix(item.PrefixId);
+					it.stack = item.Stack;
+					StoreSlot(i, it);
+				}
 				else
 					StoreSlot(i, item.Item);
 			}
@@ -98,7 +104,7 @@ namespace TShockAPI
 				return;
 			}
 
-			this.inventory[slot] = new NetItem(item.netID, item.stack, item.prefix, item);
+			this.inventory[slot] = new NetItem(item);
 		}
 
 		/// <summary>

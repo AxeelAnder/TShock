@@ -144,7 +144,18 @@ namespace TShockAPI
 			_netId = netId;
 			_stack = stack;
 			_prefixId = prefixId;
-			_item = null;
+			if(netId != 0)
+			{
+				var item = new Item();
+				item.netDefaults(netId);
+				item.Prefix(prefixId);
+				item.stack = _stack;
+				_item = item;
+			}
+			else
+			{
+				_item = null;
+			}
 		}
 
 		/// <summary>
@@ -153,11 +164,11 @@ namespace TShockAPI
 		/// <param name="netId">The net ID.</param>
 		/// <param name="stack">The stack.</param>
 		/// <param name="prefixId">The prefix ID.</param>
-		public NetItem(int netId, int stack, byte prefixId, Item item)
+		public NetItem(Item item)
 		{
-			_netId = netId;
-			_stack = stack;
-			_prefixId = prefixId;
+			_netId = item.netID;
+			_stack = item.stack;
+			_prefixId = item.prefix;
 			_item = item;
 		}
 
@@ -169,10 +180,7 @@ namespace TShockAPI
 		{
 			if (_item == null)
 				return String.Format("{0},{1},{2}", _netId, _stack, _prefixId);
-			else
-				return String.Format("{0},{1},{2}",
-					ItemIO.ToBase64(_item),
-					_stack, _prefixId);
+			return String.Format("{0}", ItemIO.ToBase64(_item));
 		}
 
 		/// <summary>
@@ -188,20 +196,30 @@ namespace TShockAPI
 				throw new ArgumentNullException("str");
 
 			string[] comp = str.Split(',');
-			if (comp.Length != 3)
-				throw new FormatException("String does not contain three sections.");
+			if (comp.Length != 3 && comp.Length != 1)
+				throw new FormatException("String does not contain right sections count.");
 
-			// int netId = Int32.Parse(comp[0]);
-			int stack = Int32.Parse(comp[1]);
-			byte prefixId = Byte.Parse(comp[2]);
-
-			if (!Int32.TryParse(comp[0], out int netId))
+			if(comp.Length == 1)
 			{
 				var item = ParseModItem(comp[0]);
-				return new NetItem(item.netID, stack, prefixId, item);
+				return new NetItem(item);
+			}
+			else if(comp.Length == 3)
+			{
+				//int netId = Int32.Parse(comp[0]);
+				int stack = Int32.Parse(comp[1]);
+				byte prefixId = Byte.Parse(comp[2]);
+
+				if (!Int32.TryParse(comp[0], out int netId))
+				{
+					var item = ParseModItem(comp[0]);
+					return new NetItem(item);
+				}
+
+				return new NetItem(netId, stack, prefixId);
 			}
 
-			return new NetItem(netId, stack, prefixId);
+			return new NetItem();
 		}
 
 		public static Item ParseModItem(string str)
@@ -235,7 +253,7 @@ namespace TShockAPI
 			}
 			else
 			{
-				return new NetItem(item.netID, item.stack, item.prefix, item);
+				return new NetItem(item);
 			}
 		}
 	}
