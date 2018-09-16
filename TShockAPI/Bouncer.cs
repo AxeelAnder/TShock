@@ -461,7 +461,7 @@ namespace TShockAPI
 		internal void OnPlayerBuff(object sender, GetDataHandlers.PlayerBuffEventArgs args)
 		{
 			byte id = args.ID;
-			byte type = args.Type;
+			ushort type = args.Type;
 			int time = args.Time;
 
 			if (TShock.Players[id] == null)

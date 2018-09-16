@@ -1017,7 +1017,7 @@ namespace TShockAPI
 			/// <summary>
 			/// Buff Type
 			/// </summary>
-			public byte Type { get; set; }
+			public ushort Type { get; set; }
 			/// <summary>
 			/// Time the buff lasts
 			/// </summary>
@@ -1028,7 +1028,7 @@ namespace TShockAPI
 		/// </summary>
 		public static HandlerList<PlayerBuffEventArgs> PlayerBuff = new HandlerList<PlayerBuffEventArgs>();
 
-		private static bool OnPlayerBuff(TSPlayer player, MemoryStream data, byte id, byte type, int time)
+		private static bool OnPlayerBuff(TSPlayer player, MemoryStream data, byte id, ushort type, int time)
 		{
 			if (PlayerBuff == null)
 				return false;
@@ -2632,7 +2632,7 @@ namespace TShockAPI
 		private static bool HandlePlayerAddBuff(GetDataHandlerArgs args)
 		{
 			var id = args.Data.ReadInt8();
-			var type = args.Data.ReadInt8();
+			var type = args.Data.ReadUInt16();
 			var time = args.Data.ReadInt32();
 
 			if (OnPlayerBuff(args.Player, args.Data, id, type, time))
