@@ -61,7 +61,7 @@ namespace TShockAPI
 			GetDataHandlers.KillMe += OnKillMe;
 			GetDataHandlers.NewProjectile += OnNewProjectile;
 			GetDataHandlers.PlaceObject += OnPlaceObject;
-			GetDataHandlers.SendTileSquare += OnSendTileSquare;
+			//GetDataHandlers.SendTileSquare += OnSendTileSquare;
 			GetDataHandlers.HealOtherPlayer += OnHealOtherPlayer;
 			GetDataHandlers.TileEdit += OnTileEdit;
 			GetDataHandlers.MassWireOperation += OnMassWireOperation;
