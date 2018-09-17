@@ -2758,7 +2758,7 @@ namespace TShockAPI
 
 			for (int i = 0; i < Terraria.Player.maxBuffs; i++)
 			{
-				var buff = args.Data.ReadInt8();
+				var buff = args.Data.ReadUInt16();
 
 				if (buff == 10 && TShock.Config.DisableInvisPvP && args.TPlayer.hostile)
 					buff = 0;

@@ -98,7 +98,7 @@ namespace TShockAPI
 		private byte _prefixId;
 		[JsonProperty("stack")]
 		private int _stack;
-		[JsonProperty("item")]
+
 		private Item _item;
 
 		/// <summary>

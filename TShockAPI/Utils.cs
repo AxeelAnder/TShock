@@ -1258,7 +1258,7 @@ namespace TShockAPI
 			{
 				if (TShock.Config.EnableModItemSync)
 				{
-					if (modItem != null)
+					if (modItem != null && modItem.netID != 0)
 					{
 						var data = Convert.FromBase64String(ItemIO.ToBase64(modItem));
 						var writer = new PacketWriter();
