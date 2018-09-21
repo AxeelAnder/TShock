@@ -1490,7 +1490,8 @@ namespace TShockAPI
 					{ PacketTypes.CrystalInvasionStart, HandleOldOnesArmy },
 					{ PacketTypes.PlayerHurtV2, HandlePlayerDamageV2 },
 					{ PacketTypes.PlayerDeathV2, HandlePlayerKillMeV2 },
-					{ PacketTypes.PlayerTeleportPortal, HandlePlayerPortalTeleport }
+					{ PacketTypes.PlayerTeleportPortal, HandlePlayerPortalTeleport },
+					{ PacketTypes.ModPacket, HandleModPacket }
 				};
 		}
 
@@ -1509,6 +1510,19 @@ namespace TShockAPI
 					return true;
 				}
 			}
+			return false;
+		}
+
+		/// <summary>The event args object for the ModPacket event</summary>
+		public class ModPacketEventArgs : GetDataHandledEventArgs
+		{
+			public Mod Mod { get; set; }
+			
+			public int NetID { get; set; }
+		}
+
+		private static bool HandleModPacket(GetDataHandlerArgs args)
+		{
 			return false;
 		}
 
