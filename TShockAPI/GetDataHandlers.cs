@@ -1517,13 +1517,38 @@ namespace TShockAPI
 		public class ModPacketEventArgs : GetDataHandledEventArgs
 		{
 			public Mod Mod { get; set; }
-			
-			public int NetID { get; set; }
+		}
+
+		public static HandlerList<ModPacketEventArgs> ModPacket = new HandlerList<ModPacketEventArgs>();
+
+		private static bool OnModPacket(TSPlayer player, MemoryStream data, Mod mod)
+		{
+			ModPacketEventArgs args = new ModPacketEventArgs
+			{
+				Mod = mod
+			};
+
+			ModPacket.Invoke(null, args);
+
+			return args.Handled;
 		}
 
 		private static bool HandleModPacket(GetDataHandlerArgs args)
 		{
 			return false;
+
+			short modID = args.Data.ReadInt16();
+			if (modID < 0)
+			{
+				return false;
+			}
+			Mod mod = ModNet.GetMod(modID);
+			if (mod == null)
+			{
+				return true;
+			}
+
+			return OnModPacket(args.Player, args.Data, mod);
 		}
 
 		/// <summary>The event args object for the PortalTeleport event</summary>
