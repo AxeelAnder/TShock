@@ -1572,7 +1572,7 @@ namespace TShockAPI
 			}
 
 			if ((player.State < 10 || player.Dead) && (int)type > 12 && (int)type != 16 && (int)type != 42 && (int)type != 50 &&
-				(int)type != 38 && (int)type != 21 && (int)type != 22 && type != PacketTypes.SyncMod && type != PacketTypes.ModPacket)
+				(int)type != 38 && (int)type != 21 && (int)type != 22 && type != PacketTypes.SyncMod && type != PacketTypes.ModPacket && type != PacketTypes.SendMod)
 			{
 				e.Handled = true;
 				return;
